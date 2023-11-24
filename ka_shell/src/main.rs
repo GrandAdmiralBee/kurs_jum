@@ -30,7 +30,7 @@ fn main() {
     if cfg!(target_os = "windows") {
         Command::new("cmd")
             .arg("/C")
-            .arg("../app/src-tauri/target/release/app")
+            .arg(r"..\app\src-tauri\target\release\app")
             .spawn()
             .unwrap();
     } else {
