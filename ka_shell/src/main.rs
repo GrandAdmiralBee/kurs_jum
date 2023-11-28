@@ -11,18 +11,10 @@ fn main() {
 
     keyauthapp.init(None).unwrap();
 
-    // let mut username = String::new();
-    // let mut password = String::new();
-
-    // println!("Print username below:");
-    // std::io::stdin().read_line(&mut username).unwrap();
-    // println!("Print password below:");
-    // std::io::stdin().read_line(&mut password).unwrap();
-
     keyauthapp
         .login(
-            "Timur".to_string(),
-            "Timur2709".to_string(),
+            "Karim".to_string(),
+            "12345678".to_string(),
             Some("141DC34C-1F00-11B2-A85C-AB9EDDDA2374".to_string()),
         )
         .unwrap();
@@ -30,13 +22,13 @@ fn main() {
     if cfg!(target_os = "windows") {
         Command::new("cmd")
             .arg("/C")
-            .arg(r"..\app\src-tauri\target\release\app")
+            .arg(r"..\app\src-tauri\target\release\app SpecialArg")
             .spawn()
             .unwrap();
     } else {
         Command::new("sh")
             .arg("-c")
-            .arg("../app/src-tauri/target/release/app")
+            .arg("../app/src-tauri/target/release/app SpecialArg")
             .spawn()
             .unwrap();
     }
