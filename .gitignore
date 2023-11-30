@@ -1,2 +1,4 @@
 ka_shell/target
+custom_shell/target
+custom_server/target
 app/src-tauri/target
