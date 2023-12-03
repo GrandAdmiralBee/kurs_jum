@@ -1,3 +1,4 @@
+use anyhow::Error;
 use serde::{Deserialize, Serialize};
 use surrealdb::engine::local::{Db, Mem};
 use surrealdb::Surreal;
@@ -14,21 +15,14 @@ static mut USER_ID: u64 = 0;
 #[derive(Serialize, Debug, Deserialize)]
 pub struct App {
     pub name: String,
-    pub users: std::collections::HashMap<String, User>,
+    pub owner_id: String,
 }
 
 impl App {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &str, owner_id: &str) -> Self {
         Self {
             name: name.to_string(),
-            users: std::collections::HashMap::default(),
-        }
-    }
-
-    pub fn add_user(&mut self, user: User) {
-        unsafe {
-            self.users.insert(USER_ID.to_string(), user);
-            USER_ID += 1;
+            owner_id: owner_id.to_string(),
         }
     }
 }
@@ -93,9 +87,21 @@ impl KursDB {
         Ok(res)
     }
 
-    pub async fn add_app(&self, app: &str) -> anyhow::Result<()> {
-        let sql = format!("CREATE app:{app} SET name = \"{app}\"");
+    pub async fn add_app(&self, app: &str, owner_id: &str) -> anyhow::Result<()> {
+        let sql = format!("CREATE app:{app} SET name = '{app}', owner_id = '{owner_id}'");
+        let response = self.0.query(sql).await?;
         Ok(())
+    }
+
+    pub async fn get_app(&self, app: &str) -> anyhow::Result<App> {
+        let sql = format!("SELECT * FROM app:{app}");
+        let mut response = self.0.query(sql).await?;
+        dbg!(&response);
+        let app: Option<App> = response.take(0)?;
+        match app {
+            Some(app) => Result::Ok(app),
+            NOne => Result::Err(Error::new(crate::Error::XValueNotOfType("App"))),
+        }
     }
 
     pub async fn get_app_users(&self, app: &str) -> anyhow::Result<Vec<String>> {

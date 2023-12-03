@@ -19,6 +19,22 @@ use rocket::{serde::json::Json, State};
 
 use prelude::*;
 
+#[post("/app_name/<app_name>/owner_id/<owner_id>")]
+async fn init_app(app_name: &str, owner_id: &str, db: &State<KursDB>) -> String {
+    let app = db.inner().get_app(app_name).await;
+    let res = match app {
+        Ok(app) => {
+            if app.owner_id.as_str() == owner_id {
+                "Success".to_string()
+            } else {
+                "InvalidOwnerId".to_string()
+            }
+        }
+        Err(err) => err.to_string(),
+    };
+    res
+}
+
 #[get("/user/<login>")]
 async fn get_user(login: &str, db: &State<KursDB>) -> Json<User> {
     let user = db.inner().get_user(login).await.unwrap();
@@ -49,10 +65,13 @@ async fn get_user_host_name(login: &str, db: &State<KursDB>) -> String {
 async fn main() -> anyhow::Result<()> {
     let db = KursDB::new().await?;
 
-    db.add_app("GMOD").await?;
+    db.add_app("GMOD", "1234").await?;
 
     let _rocket = rocket::build()
-        .mount("/", routes![get_user, add_user, get_user_host_name])
+        .mount(
+            "/",
+            routes![get_user, add_user, get_user_host_name, init_app],
+        )
         .attach(CORS)
         .manage(db)
         .launch()
