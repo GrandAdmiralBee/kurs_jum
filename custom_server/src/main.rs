@@ -39,7 +39,13 @@ async fn init_app(app_name: &str, owner_id: &str, db: &State<KursDB>) -> String 
 async fn get_user(login: &str, password: &str, db: &State<KursDB>) -> String {
     let user = db.inner().get_user(login).await;
     match user {
-        Ok(user) => "Success".to_string(),
+        Ok(user) => {
+            if user.password != password {
+                "Invalid password".to_string()
+            } else {
+                "Success".to_string()
+            }
+        }
         Err(_) => "Authorized user does not exist".to_string(),
     }
 }
@@ -60,8 +66,12 @@ async fn add_user(
 
 #[get("/user/login/<login>/host_name/<host_name>")]
 async fn get_user_host_name(login: &str, host_name: &str, db: &State<KursDB>) -> String {
-    let host_name = db.inner().get_user_host_name(login).await.unwrap();
-    host_name
+    let got_host_name = db.inner().get_user_host_name(login).await.unwrap();
+    if got_host_name == host_name {
+        return "Success".to_string();
+    } else {
+        return "InvalidHostName".to_string();
+    }
 }
 
 #[rocket::main]

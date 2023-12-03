@@ -29,8 +29,8 @@ impl App {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
-    login: String,
-    password: String,
+    pub login: String,
+    pub password: String,
     // creation_date: chrono::DateTime<chrono::Utc>,
     // last_login_date: chrono::DateTime<chrono::Utc>,
     id: Thing,

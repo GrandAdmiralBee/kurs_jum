@@ -38,13 +38,24 @@ impl CustomApi {
         }
     }
 
-    pub fn login(&mut self, username: &str, password: &str) -> anyhow::Result<()> {
+    pub fn login(&mut self, username: &str, password: &str, host_name: &str) -> anyhow::Result<()> {
         let mut req_data: Vec<(&str, &str)> = Vec::new();
         req_data.push(("login", username));
         req_data.push(("password", password));
 
         let response = Self::request_get(req_data, &format!("{}/user", self.api_url));
-        dbg!(response);
+        if response.text().unwrap() != "Success" {
+            anyhow::bail!("Invalid user data");
+        }
+
+        let mut req_data: Vec<(&str, &str)> = Vec::new();
+        req_data.push(("login", username));
+        req_data.push(("host_name", host_name));
+
+        let response = Self::request_get(req_data, &format!("{}/user", self.api_url));
+        if response.text().unwrap() != "Success" {
+            anyhow::bail!("Invalid host_name");
+        }
 
         Ok(())
     }
@@ -62,7 +73,6 @@ impl CustomApi {
         req_data.push(("host_name", host_name));
 
         let response = Self::request_post(req_data, &format!("{}/user", &self.api_url));
-        dbg!(response);
 
         Ok(())
     }
