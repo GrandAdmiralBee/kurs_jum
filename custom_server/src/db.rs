@@ -100,7 +100,7 @@ impl KursDB {
         let app: Option<App> = response.take(0)?;
         match app {
             Some(app) => Result::Ok(app),
-            NOne => Result::Err(Error::new(crate::Error::XValueNotOfType("App"))),
+            None => anyhow::bail!("App does not exist"),
         }
     }
 

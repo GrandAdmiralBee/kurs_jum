@@ -35,13 +35,16 @@ async fn init_app(app_name: &str, owner_id: &str, db: &State<KursDB>) -> String 
     res
 }
 
-#[get("/user/<login>")]
-async fn get_user(login: &str, db: &State<KursDB>) -> Json<User> {
-    let user = db.inner().get_user(login).await.unwrap();
-    Json(user)
+#[get("/user/login/<login>/password/<password>")]
+async fn get_user(login: &str, password: &str, db: &State<KursDB>) -> String {
+    let user = db.inner().get_user(login).await;
+    match user {
+        Ok(user) => "Success".to_string(),
+        Err(_) => "Authorized user does not exist".to_string(),
+    }
 }
 
-#[post("/user/<app>/<login>/<password>/<host_name>")]
+#[post("/user/app/<app>/login/<login>/password/<password>/host_name/<host_name>")]
 async fn add_user(
     login: &str,
     password: &str,
@@ -55,8 +58,8 @@ async fn add_user(
     Json(user)
 }
 
-#[get("/user/<login>/host_name")]
-async fn get_user_host_name(login: &str, db: &State<KursDB>) -> String {
+#[get("/user/login/<login>/host_name/<host_name>")]
+async fn get_user_host_name(login: &str, host_name: &str, db: &State<KursDB>) -> String {
     let host_name = db.inner().get_user_host_name(login).await.unwrap();
     host_name
 }
