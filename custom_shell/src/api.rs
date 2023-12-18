@@ -1,8 +1,8 @@
-use anyhow::Result;
+
 use reqwest::blocking::Client;
 use reqwest::blocking::Response;
-use std::collections::HashMap;
-use std::io::Read;
+
+
 
 #[derive(Debug, Clone)]
 pub struct CustomApi {
@@ -72,7 +72,7 @@ impl CustomApi {
         req_data.push(("password", password));
         req_data.push(("host_name", host_name));
 
-        let response = Self::request_post(req_data, &format!("{}/user", &self.api_url));
+        let _response = Self::request_post(req_data, &format!("{}/user", &self.api_url));
 
         Ok(())
     }
